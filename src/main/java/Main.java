@@ -1,65 +1,29 @@
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.internal.operators.observable.ObservableFromCallable;
-import io.reactivex.rxjava3.observables.ConnectableObservable;
-
-import java.util.List;
-import java.util.concurrent.Callable;
-
-import static java.lang.Thread.sleep;
 
 public class Main {
     public static void main(String[] args){
-//        throwException();
-//        throwExceptionUsingCallable();
-//        createObservableUsingEmpty();
-        createObservableUsingNever();
+//        createObservableUsingRange();
+        createObservableUsingDefer();
     }
 
-    private static void throwException() {
-        //Create one Error Instance
-        Observable observable = Observable.error(
-                new Throwable("An Exception!!")
-        );
-        observable.subscribe(
-                System.out::println,
-                error -> System.out.println("Error Subscribe-1: " + error.hashCode())
-        );
-        observable.subscribe(
-                System.out::println,
-                error -> System.out.println("Error Subscribe-2: " + error.hashCode())
-        );
+    private static void createObservableUsingRange() {
+        // Observable using Range
+        Observable<Integer> observable = Observable.range(1,10);
+        observable.subscribe(System.out::println);
+        // Formula to calculate range of numbers : [n, n+m-1] --> range(1, 1+10-1) -->[1,2,3,...,10]
     }
 
-    private static void throwExceptionUsingCallable() {
-        //Create different instance of error for different observer
-        Observable observable = Observable.error(() -> new Throwable("Error"));
-
-        observable.subscribe(
-                System.out::println,
-                error -> System.out.println("Error Subscribe-1: " + error.hashCode())
-        );
-        observable.subscribe(
-                System.out::println,
-                error -> System.out.println("Error Subscribe-2: " + error.hashCode())
-        );
-    }
-    private static void createObservableUsingEmpty() {
-        Observable observable = Observable.empty();
-        observable.subscribe(
-                System.out::println,
-                System.out::println,
-                ()->System.out.println("Completed")
-        );
-    }
-
-    private static void createObservableUsingNever() {
-        Observable observable = Observable.never();
-        observable.subscribe(
-                System.out::println,
-                System.out::println,
-                ()->System.out.println("Completed")
-        );
+    public static int start=1, count=3;
+    private static void createObservableUsingDefer() {
+        // Defer Care for state change
+        Observable<Integer> observable = Observable.defer(() -> Observable.range(start, count));
+        observable.subscribe(integer -> {
+            System.out.println("Observable-1 "+integer);
+        });
+        count = 5;
+        observable.subscribe(integer -> {
+            System.out.println("Observable-2 "+integer);
+        });
     }
 }
 
